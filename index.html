@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIFY JSON form test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .box {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin: 50px auto;
+        }
+        h2 {
+            text-align: center;
+        }
+        .label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .input {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .msg {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .btn {
+            margin-top: 10px;
+            padding: 8px;
+            width: 100%;
+            background: #ddd;
+            border: 1px solid #aaa;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>WIFY JSON form test</h2>
+        <form id="form"></form>
+    </div>
+</body>
+<script>
+        const fields = [
+            { key: "user_name", label: "Name:", type: "text", maxLength: 50, placeholder: "Enter Name" },
+            { key: "mobile_no", label: "Mobile Number:", type: "tel", pattern: "^\\d{10}$", placeholder: "Enter Mobile Number" },
+            { key: "email", label: "Email:", type: "email", pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", placeholder: "Enter Email" }
+        ];
+
+        function buildForm() {
+            const form = document.getElementById("form");
+            form.innerHTML = "";
+            
+            fields.forEach(field => {
+                const label = document.createElement("label");
+                label.textContent = field.label;
+                label.className = "label";
+                
+                const input = document.createElement("input");
+                input.type = field.type;
+                input.name = field.key;
+                input.placeholder = field.placeholder;
+                input.className = "input";
+                
+
+                const msg = document.createElement("div");
+                msg.className = "msg";
+                msg.id = field.key + "_msg";
+                
+                input.addEventListener("input", () => validate(input, field, msg));
+                
+                form.appendChild(label);
+                form.appendChild(input);
+                form.appendChild(msg);
+            });
+            
+            const button = document.createElement("button");
+            button.type = "submit";
+            button.textContent = "Submit";
+            button.className = "btn";
+            form.appendChild(button);
+        }
+
+        function validate(input, field, msg) {
+            msg.textContent = "";
+            msg.style.display = "none";
+            
+            if (!input.value.trim()) {
+                msg.textContent = "This field is required";
+                msg.style.display = "block";
+            }else if (field.pattern && !new RegExp(field.pattern).test(input.value)) {
+                msg.textContent = "Invalid format";
+                msg.style.display = "block";
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            let valid = true;
+            
+            fields.forEach(field => {
+                const input = document.querySelector(`[name="${field.key}"]`);
+                const msg = document.getElementById(field.key + "_msg");
+                validate(input, field, msg);
+                if (msg.style.display === "block") valid = false;
+            });
+            
+            if (valid) alert("Submitted successfully");
+        }
+
+        document.getElementById("form").addEventListener("submit", handleSubmit);
+        buildForm();
+    </script>
+</html>
